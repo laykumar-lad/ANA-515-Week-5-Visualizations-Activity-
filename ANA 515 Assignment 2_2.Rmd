@@ -1,0 +1,79 @@
+---
+title: "ANA Assignment 2_2"
+author: "Laykumar Lad"
+date: "2024-06-11"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Section1, echo=TRUE}
+#The dataset in use, sourced from FiveThirtyEight, details alcohol consumption by country. It captures the average annual per capita consumption of different types of alcohol across various nations. This dataset aims to provide insights into global alcohol consumption patterns. Research questions it can address include identifying countries with the highest and lowest alcohol consumption and determining the most and least consumed types of alcohol.
+
+#The dataset is stored in a CSV (Comma Separated Values) file, a flat file format. Delimited by commas, CSV files are easily readable and writable using numerous software programs, including R.
+
+```
+
+```{r drinks, echo=TRUE}
+library(tidyverse)
+
+drinks <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/alcohol-consumption/drinks.csv"
+data <- read_csv(drinks)
+
+#The read_csv function from the readr package is used to read the CSV file.
+
+```
+
+# Inline code to print number of rows and columns
+This dataframe has `r nrow(data)` rows and `r ncol(data)` columns. The names of the columns and a brief description of each are in the table below:
+
+```{r Characteristics, echo=TRUE}
+
+# Create a table of column names and descriptions
+library(knitr)
+column_descriptions <- data.frame(
+  column_name = colnames(data),
+  description = c("Country name", 
+                  "Beer servings per person per year", 
+                  "Spirit servings per person per year", 
+                  "Wine servings per person per year", 
+                  "Total litres of pure alcohol per person per year")
+)
+kable(column_descriptions, col.names = c("Column Name", "Description"))
+```
+
+```{r Summary, echo=TRUE}
+
+# Select three columns for summary
+selected_columns <- data[, c("beer_servings", "spirit_servings", "wine_servings")]
+
+# Get summary statistics
+summary_stats <- data.frame(
+  column = colnames(selected_columns),
+  min_value = sapply(selected_columns, min, na.rm = TRUE),
+  max_value = sapply(selected_columns, max, na.rm = TRUE),
+  mean_value = sapply(selected_columns, mean, na.rm = TRUE),
+  missing_values = sapply(selected_columns, function(x) sum(is.na(x)))
+)
+
+# Print summary statistics
+kable(summary_stats, col.names = c("Column", "Min Value", "Max Value", "Mean Value", "Missing Values"))
+
+```
+
+```{r Histogram, echo=TRUE}
+ggplot(data, aes(x = beer_servings)) +
+  geom_histogram(binwidth = 15, fill = "purple", color = "red") +
+  labs(title = "Distribution of Beer Servings", x = "Beer Servings", y = "Frequency") +
+  theme_minimal()
+```
+
+```{r Scatterplot, echo=TRUE}
+ggplot(data, aes(x = beer_servings, y = wine_servings)) +
+  geom_point(color = "cyan", alpha = 0.6) +
+  labs(title = "Beer Servings vs. Wine Servings", x = "Beer Servings", y = "Wine Servings") +
+  theme_minimal()
+```
+
